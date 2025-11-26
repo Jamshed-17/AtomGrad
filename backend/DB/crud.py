@@ -13,7 +13,7 @@ def all_persons(db: Session, fields: List[str] = None) -> List[models.Persons]:
     return db.query(models.Persons).all()
 
 def person_id(db: Session, name: str) -> Optional[int]:
-    """Возвращает id человека по его имени"""
+    """Возвращает id деятеля по его имени"""
     person = db.query(models.Persons).filter(models.Persons.name == name).first()
     return person.id if person else None
     
@@ -22,7 +22,7 @@ def one_person(db: Session, id: int) -> Optional[models.Persons]:
     return db.query(models.Persons).filter(models.Persons.id == id).first()
     
 def new_person(db: Session, person: schemas.PersonCreate) -> models.Persons:
-    """ Добавление нового человека в базу данных """
+    """ Добавление нового деятеля в базу данных """
     
     add_person = models.Persons(**person.model_dump()) 
     
@@ -34,7 +34,7 @@ def new_person(db: Session, person: schemas.PersonCreate) -> models.Persons:
     
 def edit_person(db: Session, id: int, person_data: schemas.PersonCreate) -> Optional[int]:
     """
-    Изменяет пользователя по ID.
+    Изменяет деятеля по ID.
     """
     person = db.query(models.Persons).filter(models.Persons.id == id).first()
     if not person:
@@ -49,7 +49,7 @@ def edit_person(db: Session, id: int, person_data: schemas.PersonCreate) -> Opti
     return person.id
 
 def delete_person(db: Session, person_id: int) -> Optional[int]:
-    """Удаляет человека по ID"""
+    """Удаляет деятеля по ID"""
     person = db.query(models.Persons).filter(models.Persons.id == person_id).first()
     if not person:
         return None

@@ -16,8 +16,8 @@ class Persons(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True) #ID
     name: Mapped[str] = mapped_column(String(100)) # Имя
     about: Mapped[str] = mapped_column(String(150), nullable=False) # Информация (должность)
-    text: Mapped[JSONB] = mapped_column(JSON, nullable=False) # Текст о персоне, записанный в JSON, абзац = элемент
-    photo: Mapped[str] = mapped_column(String(255), nullable=False) # Фотография персоны, в виде ссылки на файл
+    text: Mapped[JSONB] = mapped_column(JSON, nullable=False) # Текст о деятеле, записанный в JSON, абзац = элемент
+    photo: Mapped[str] = mapped_column(String(255), nullable=False) # Фотография деятеля, в виде ссылки на файл
     sourses: Mapped[JSONB] = mapped_column(JSON, nullable=False) # Источники в виде JSON, один источник = один элемент 
     autor: Mapped[Optional[str]] = mapped_column(String(150), nullable=True) # Составитель, если есть
     

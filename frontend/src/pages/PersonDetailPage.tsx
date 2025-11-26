@@ -38,7 +38,7 @@ const PersonDetailPage = () => {
         setPerson(data);
       } catch (err: unknown) {
         const error = err as { response?: { data?: { detail?: string } } };
-        setError(error.response?.data?.detail || "Ошибка при загрузке персоны");
+        setError(error.response?.data?.detail || "Ошибка при загрузке деятеля");
       } finally {
         setLoading(false);
       }
@@ -78,7 +78,7 @@ const PersonDetailPage = () => {
   if (error || !person) {
     return (
       <Container sx={{ py: 4 }}>
-        <Alert severity="error">{error || "Персона не найдена"}</Alert>
+        <Alert severity="error">{error || "Деятель не найден"}</Alert>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate("/")}
@@ -141,7 +141,7 @@ const PersonDetailPage = () => {
           <Divider sx={{ my: 2 }} />
 
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-            О персоне
+            О деятеле
           </Typography>
           <Typography variant="body1" paragraph>
             {person.about}

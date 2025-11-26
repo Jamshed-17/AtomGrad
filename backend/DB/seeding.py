@@ -30,7 +30,7 @@ def run_seeding(db: Session):
                 
 
                 if crud.person_id(db, name=person_name) is not None:
-                    print(f"⏩ Skipping '{person_name}'. Person already exists.")
+                    print(f"⏩ Skipping '{person_name}'. Activist already exists.")
                     skipped_count += 1
                     continue 
                 
@@ -50,4 +50,4 @@ def run_seeding(db: Session):
                 print(f"❌ Error seeding file {filename}: {e}")
                 
     db.commit() 
-    print(f"Database seeding finished. {added_count} persons added, {skipped_count} skipped.")
+    print(f"Database seeding finished. {added_count} activists added, {skipped_count} skipped.")

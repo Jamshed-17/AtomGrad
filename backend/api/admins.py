@@ -12,7 +12,7 @@ def add_person(
     db: Session = Depends(db.get_db),
     admin_id: int = Depends(get_current_admin)
 ):
-    """Добавляет новую персону (только для админов)"""
+    """Добавляет нового деятеля (только для админов)"""
     new_person = crud.new_person(db, person)
     return new_person
 
@@ -23,7 +23,7 @@ def update_person(
     db: Session = Depends(db.get_db),
     admin_id: int = Depends(get_current_admin)
 ):
-    """Обновляет данные персоны по ID"""
+    """Обновляет данные деятеля по ID"""
     result = crud.edit_person(db, person_id, person_data)
     
     if result is None:
@@ -39,7 +39,7 @@ def delete_person(
     db: Session = Depends(db.get_db),
     admin_id: int = Depends(get_current_admin)
 ):
-    """Удаляет персону по ID"""
+    """Удаляет деятеля по ID"""
     deleted_id = crud.delete_person(db, person_id)
     
     if deleted_id is None:

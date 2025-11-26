@@ -1,26 +1,26 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  Container,
-  Box,
-  Card,
-  CardContent,
-  TextField,
-  Button,
-  Typography,
-  Alert,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Stack,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import { useForm, Controller } from "react-hook-form";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 import { personsApi, type PersonCreate } from "../api/persons";
 
 interface PersonFormData {
@@ -63,6 +63,7 @@ const AdminPersonsPage = () => {
       const fetchPerson = async () => {
         try {
           setLoading(true);
+          setError(null);
           const data = await personsApi.getById(Number(id));
           reset({
             name: data.name,
@@ -75,17 +76,60 @@ const AdminPersonsPage = () => {
           setTextItems(data.text.length > 0 ? data.text : [""]);
           setSoursesItems(data.sourses.length > 0 ? data.sourses : [""]);
         } catch (err: unknown) {
-          const error = err as { response?: { data?: { detail?: string } } };
-          setError(
-            error.response?.data?.detail || "Ошибка при загрузке персоны"
-          );
+          console.error("Error fetching person:", err);
+          const error = err as {
+            response?: {
+              data?: {
+                detail?: string;
+                message?: string;
+              };
+              status?: number;
+            };
+            message?: string;
+          };
+
+          let errorMessage = "Ошибка при загрузке деятеля";
+
+          if (
+            error.response?.status === 401 ||
+            error.response?.status === 403
+          ) {
+            errorMessage = "Нет доступа. Пожалуйста, войдите снова.";
+            navigate("/login");
+            return;
+          } else if (error.response?.status === 404) {
+            errorMessage = "Деятель не найден";
+            navigate("/");
+            return;
+          } else if (error.response?.data?.detail) {
+            errorMessage = error.response.data.detail;
+          } else if (error.response?.data?.message) {
+            errorMessage = error.response.data.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+
+          setError(errorMessage);
         } finally {
           setLoading(false);
         }
       };
       fetchPerson();
+    } else {
+      // Сброс формы для режима создания
+      reset({
+        name: "",
+        about: "",
+        text: [],
+        photo: "",
+        sourses: [],
+        autor: "",
+      });
+      setTextItems([""]);
+      setSoursesItems([""]);
+      setError(null);
     }
-  }, [id, isEditMode, reset]);
+  }, [id, isEditMode, reset, navigate]);
 
   const onSubmit = async (data: PersonFormData) => {
     setError(null);
@@ -109,8 +153,33 @@ const AdminPersonsPage = () => {
 
       navigate("/");
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || "Ошибка при сохранении персоны");
+      console.error("Error saving person:", err);
+      const error = err as {
+        response?: {
+          data?: {
+            detail?: string;
+            message?: string;
+          };
+          status?: number;
+        };
+        message?: string;
+      };
+
+      let errorMessage = "Ошибка при сохранении деятеля";
+
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        errorMessage = "Нет доступа. Пожалуйста, войдите снова.";
+        navigate("/login");
+        return;
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -121,11 +190,37 @@ const AdminPersonsPage = () => {
 
     try {
       setLoading(true);
+      setError(null);
       await personsApi.delete(Number(id));
       navigate("/");
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || "Ошибка при удалении персоны");
+      console.error("Error deleting person:", err);
+      const error = err as {
+        response?: {
+          data?: {
+            detail?: string;
+            message?: string;
+          };
+          status?: number;
+        };
+        message?: string;
+      };
+
+      let errorMessage = "Ошибка при удалении деятеля";
+
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        errorMessage = "Нет доступа. Пожалуйста, войдите снова.";
+        navigate("/login");
+        return;
+      } else if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
       setDeleteDialogOpen(false);
@@ -170,7 +265,7 @@ const AdminPersonsPage = () => {
         gutterBottom
         sx={{ mb: 3, fontWeight: 600 }}
       >
-        {isEditMode ? "Редактирование персоны" : "Добавление новой персоны"}
+        {isEditMode ? "Редактирование деятеля" : "Добавление нового деятеля"}
       </Typography>
 
       {error && (
@@ -208,7 +303,7 @@ const AdminPersonsPage = () => {
                 <TextField
                   {...field}
                   fullWidth
-                  label="О персоне"
+                  label="О деятеле"
                   variant="outlined"
                   multiline
                   rows={4}
@@ -364,7 +459,7 @@ const AdminPersonsPage = () => {
         <DialogTitle>Подтверждение удаления</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Вы уверены, что хотите удалить эту персону? Это действие нельзя
+            Вы уверены, что хотите удалить этого деятеля? Это действие нельзя
             отменить.
           </DialogContentText>
         </DialogContent>

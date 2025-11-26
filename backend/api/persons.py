@@ -10,7 +10,7 @@ def read_persons(
     db: Session = Depends(db.get_db),
 ):
     """
-    Получает список всех персон.
+    Получает список всех деятелей.
     """
     persons = crud.all_persons(db)
     return persons 
@@ -18,7 +18,7 @@ def read_persons(
 @router.get("/{person_id}", response_model=schemas.PersonRead)
 def read_person(person_id: int, db: Session = Depends(db.get_db)):
     """
-    Получает всю информацию о конкретной персоне по ее ID.
+    Получает всю информацию о конкретном деятеле по его ID.
     """
     db_person = crud.one_person(db, person_id)
     if db_person is None:
@@ -28,7 +28,7 @@ def read_person(person_id: int, db: Session = Depends(db.get_db)):
 @router.get("/id/{name}", response_model=schemas.PersonRead)
 def get_person_by_name(name: str, db: Session = Depends(db.get_db)):
     """
-    Ищет персону по имени и возвращает ее полную информацию.
+    Ищет деятеля по имени и возвращает его полную информацию.
     """
     person_id = crud.person_id(db, name=name)
     if person_id is None:

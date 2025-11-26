@@ -22,6 +22,11 @@ class PersonRead(PersonBase):
 
 # --- ADMIN SCHEMAS ---
 
+class AdminLogin(BaseModel):
+    """Схема для входа в систему (только login и password)"""
+    login: str
+    password: str
+
 class AdminCreate(BaseModel):
     name: str
     login: str

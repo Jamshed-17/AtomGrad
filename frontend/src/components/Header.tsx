@@ -1,10 +1,27 @@
+import {
+  AdminPanelSettings as AdminPanelSettingsIcon,
+  Login as LoginIcon,
+  Logout as LogoutIcon,
+  PersonAdd as PersonAddIcon,
+  Delete as DeleteIcon,
+  ArrowDropDown as ArrowDropDownIcon,
+} from "@mui/icons-material";
+import {
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useState } from "react";
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import LogoutIcon from "@mui/icons-material/Logout";
-import LoginIcon from "@mui/icons-material/Login";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import TelegramButton from "./TelegramButton";
 import ThemeToggleButton from "./ThemeToggleButton";
 
@@ -27,10 +44,34 @@ const Header = () => {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+  const [personMenuAnchor, setPersonMenuAnchor] = useState<null | HTMLElement>(null);
+  const theme = useTheme();
+  // md breakpoint = 900px (планшет и меньше)
+  const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"));
+  // xs breakpoint = 0px (телефон)
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleLogout = async () => {
     await logout();
     navigate("/");
+  };
+
+  const handlePersonMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setPersonMenuAnchor(event.currentTarget);
+  };
+
+  const handlePersonMenuClose = () => {
+    setPersonMenuAnchor(null);
+  };
+
+  const handleAddPerson = () => {
+    handlePersonMenuClose();
+    navigate("/admin/persons/new");
+  };
+
+  const handleDeletePerson = () => {
+    handlePersonMenuClose();
+    navigate("/admin/persons/delete");
   };
 
   return (
@@ -59,7 +100,7 @@ const Header = () => {
           }}
         >
           <AtomIcon isHovered={isLogoHovered} />
-          АтомГрад
+          {!isMobile && "АтомГрад"}
         </Typography>
         <Box
           sx={{
@@ -86,23 +127,94 @@ const Header = () => {
           </Box>
           {isAuthenticated ? (
             <>
-              <Button
-                color="inherit"
-                startIcon={<PersonAddIcon />}
-                onClick={() => navigate("/admin/persons/new")}
-                sx={{ textTransform: "none" }}
-              >
-                Добавить персону
-              </Button>
-              <Button
-                color="inherit"
-                startIcon={<LogoutIcon />}
-                onClick={handleLogout}
-                sx={{ textTransform: "none" }}
-              >
-                Выйти
-              </Button>
+              {isTabletOrMobile ? (
+                <>
+                  <Tooltip title="Управление деятелями">
+                    <IconButton
+                      color="inherit"
+                      onClick={handlePersonMenuOpen}
+                    >
+                      <PersonAddIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    anchorEl={personMenuAnchor}
+                    open={Boolean(personMenuAnchor)}
+                    onClose={handlePersonMenuClose}
+                  >
+                    <MenuItem onClick={handleAddPerson}>
+                      <PersonAddIcon sx={{ mr: 1 }} />
+                      Добавить деятеля
+                    </MenuItem>
+                    <MenuItem onClick={handleDeletePerson}>
+                      <DeleteIcon sx={{ mr: 1 }} />
+                      Удалить деятеля
+                    </MenuItem>
+                  </Menu>
+                  <Tooltip title="Управление админами">
+                    <IconButton
+                      color="inherit"
+                      onClick={() => navigate("/admin/admins")}
+                    >
+                      <AdminPanelSettingsIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Выйти">
+                    <IconButton color="inherit" onClick={handleLogout}>
+                      <LogoutIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              ) : (
+                <>
+                  <Button
+                    color="inherit"
+                    startIcon={<PersonAddIcon />}
+                    endIcon={<ArrowDropDownIcon />}
+                    onClick={handlePersonMenuOpen}
+                    sx={{ textTransform: "none" }}
+                  >
+                    Управление деятелями
+                  </Button>
+                  <Menu
+                    anchorEl={personMenuAnchor}
+                    open={Boolean(personMenuAnchor)}
+                    onClose={handlePersonMenuClose}
+                  >
+                    <MenuItem onClick={handleAddPerson}>
+                      <PersonAddIcon sx={{ mr: 1 }} />
+                      Добавить деятеля
+                    </MenuItem>
+                    <MenuItem onClick={handleDeletePerson}>
+                      <DeleteIcon sx={{ mr: 1 }} />
+                      Удалить деятеля
+                    </MenuItem>
+                  </Menu>
+                  <Button
+                    color="inherit"
+                    startIcon={<AdminPanelSettingsIcon />}
+                    onClick={() => navigate("/admin/admins")}
+                    sx={{ textTransform: "none" }}
+                  >
+                    Управление админами
+                  </Button>
+                  <Button
+                    color="inherit"
+                    startIcon={<LogoutIcon />}
+                    onClick={handleLogout}
+                    sx={{ textTransform: "none" }}
+                  >
+                    Выйти
+                  </Button>
+                </>
+              )}
             </>
+          ) : isTabletOrMobile ? (
+            <Tooltip title="Войти">
+              <IconButton color="inherit" component={Link} to="/login">
+                <LoginIcon />
+              </IconButton>
+            </Tooltip>
           ) : (
             <Button
               color="inherit"

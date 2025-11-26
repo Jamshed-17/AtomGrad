@@ -1,5 +1,5 @@
-import axios from "axios";
 import type { AxiosError } from "axios";
+import axios from "axios";
 
 const API_BASE_URL = import.meta.env.PROD
   ? import.meta.env.VITE_API_URL || "https://atomgrad.site"
@@ -22,6 +22,7 @@ apiClient.interceptors.response.use(
       status: error.response?.status,
       message: error.message,
       code: (error as { code?: string }).code,
+      responseData: error.response?.data, // Добавляем полные данные ответа для отладки
     });
 
     if (error.response?.status === 401 || error.response?.status === 403) {

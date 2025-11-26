@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, Request, status
 from sqlalchemy.orm import Session
 from backend.DB import crud, db, models
 from jose import jwt, JWTError
-from backend.DB.schemas import AdminCreate
+from backend.DB.schemas import AdminLogin
 from backend.core.config import settings
 from datetime import datetime, timedelta, timezone 
 from typing import Optional
@@ -18,7 +18,9 @@ def create_access_token(data: dict, expires_delta: timedelta):
     return encoded_jwt
 
 @router.post("/login")
-def login(admin: AdminCreate, response: Response, db: Session = Depends(db.get_db)):
+def login(admin: AdminLogin, response: Response, db: Session = Depends(db.get_db)):
+    """Эндпоинт для входа в систему. Ожидает AdminLogin с полями login и password."""
+    print(f"Login attempt for: {admin.login}")  # Логирование для отладки
     db_admin = crud.get_admin_by_login(db, admin.login)
     
     if not db_admin or not db_admin.verify_password(admin.password):

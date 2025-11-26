@@ -1,21 +1,22 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import CloseIcon from "@mui/icons-material/Close";
 import {
-  Container,
+  Alert,
   Box,
+  Button,
   Card,
   CardContent,
-  TextField,
-  Button,
-  Typography,
-  Alert,
+  Container,
   IconButton,
+  TextField,
+  Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useAuth } from "../contexts/AuthContext";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { LoginCredentials } from "../api/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage = () => {
+  const [name, setName] = useState<string>("");
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
@@ -29,12 +30,59 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const credentials: LoginCredentials = { login, password };
+      const credentials: LoginCredentials = { name, login, password };
       await authLogin(credentials);
-      navigate("/admin/persons");
+      // Небольшая задержка для обновления состояния аутентификации
+      setTimeout(() => {
+        navigate("/admin/persons/new", { replace: true });
+      }, 100);
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } };
-      setError(error.response?.data?.detail || "Неверный логин или пароль");
+      console.error("Login error:", err);
+      const error = err as {
+        response?: {
+          data?: {
+            detail?: string | string[];
+            message?: string;
+          };
+          status?: number;
+        };
+        message?: string;
+      };
+
+      let errorMessage = "Неверный логин или пароль";
+
+      // Обработка ошибки 422 (валидация)
+      if (error.response?.status === 422) {
+        const detail = error.response.data?.detail;
+        if (Array.isArray(detail)) {
+          // Pydantic возвращает массив ошибок валидации
+          errorMessage = (
+            detail as Array<{ loc?: (string | number)[]; msg?: string }>
+          )
+            .map(
+              (err) =>
+                `${err.loc?.join(".") || "Поле"}: ${
+                  err.msg || "Ошибка валидации"
+                }`
+            )
+            .join(", ");
+        } else if (typeof detail === "string") {
+          errorMessage = detail;
+        } else {
+          errorMessage =
+            "Ошибка валидации данных. Проверьте правильность ввода.";
+        }
+      } else if (error.response?.data?.detail) {
+        errorMessage = Array.isArray(error.response.data.detail)
+          ? error.response.data.detail.join(", ")
+          : error.response.data.detail;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message && error.message !== "Network Error") {
+        errorMessage = error.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -82,6 +130,16 @@ const LoginPage = () => {
           )}
 
           <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Имя"
+              variant="outlined"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              sx={{ mb: 2 }}
+              disabled={loading}
+            />
             <TextField
               fullWidth
               label="Логин"
