@@ -233,3 +233,8 @@ const AdminDeletePersonPage = () => {
 
 export default AdminDeletePersonPage;
 
+
+
+
+
+
