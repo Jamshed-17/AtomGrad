@@ -16,6 +16,10 @@ def person_id(db: Session, name: str) -> Optional[int]:
     """Возвращает id деятеля по его имени"""
     person = db.query(models.Persons).filter(models.Persons.name == name).first()
     return person.id if person else None
+
+def person_image(db: Session, id: int):
+    """Возвращает фотографию пользователя"""
+    return db.query(models.Persons.photo).filter(models.Persons.id == id).scalar()
     
 def one_person(db: Session, id: int) -> Optional[models.Persons]:
     """Возвращает объект Models.Persons по его ID"""

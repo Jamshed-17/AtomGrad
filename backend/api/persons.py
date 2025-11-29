@@ -40,3 +40,13 @@ def get_person_by_name(name: str, db: Session = Depends(db.get_db)):
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Person not found")
         
     return db_person
+
+@router.get("/{person_id}", response_model=schemas.PersonRead)
+def person_image(person_id: int, db: Session = Depends(db.get_db)):
+    """
+    Получает всю информацию о конкретном деятеле по его ID.
+    """
+    db_person_poto = crud.person_image(db, person_id)
+    if db_person_poto is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Person not found")
+    return db_person_poto
