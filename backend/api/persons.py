@@ -41,10 +41,10 @@ def get_person_by_name(name: str, db: Session = Depends(db.get_db)):
         
     return db_person
 
-@router.get("/{person_id}", response_model=schemas.PersonRead)
+@router.get("/image/{person_id}", response_model=schemas.PersonRead)
 def person_image(person_id: int, db: Session = Depends(db.get_db)):
     """
-    Получает всю информацию о конкретном деятеле по его ID.
+    Получает фотографию персоны по id.
     """
     db_person_poto = crud.person_image(db, person_id)
     if db_person_poto is None:
