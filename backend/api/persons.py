@@ -41,7 +41,7 @@ def get_person_by_name(name: str, db: Session = Depends(db.get_db)):
         
     return db_person
 
-@router.get("/image/{person_id}", response_model=schemas.PersonRead)
+@router.get("/image/{person_id}")
 def person_image(person_id: int, db: Session = Depends(db.get_db)):
     """
     Получает фотографию персоны по id.
