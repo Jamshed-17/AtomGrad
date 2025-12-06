@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:16
@@ -13,29 +15,36 @@ services:
   api:
     build: ./backend
     ports:
-      - "8000:8000"
+      - "8000:8000"    # HTTP (старый порт)
+      - "8443:8443"    # HTTPS (новый порт)
     volumes:
       - ./backend:/app/backend
+      # Монтируем ваши SSL сертификаты
+      - /etc/ssl/certs/ssl-cert-snakeoil.pem:/app/ssl/cert.pem:ro
+      - /etc/ssl/private/ssl-cert-snakeoil.key:/app/ssl/key.pem:ro
     env_file:
       - .env
     depends_on:
       - db
-
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-
-    command:
-      ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    # Запускаем сразу с HTTPS на порту 8443
+    command: >
+      uvicorn backend.main:app --host 0.0.0.0 --port 8443
+        --ssl-keyfile /app/ssl/key.pem
+        --ssl-certfile /app/ssl/cert.pem
 
   frontend:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: /api
+        VITE_API_URL: https://atomgrad.site:8443  # Меняем на HTTPS!
     ports:
       - "3000:3000"
     depends_on:
       - api
+    # Для разработки используем npm start
+    command: npm start
 
 volumes:
   pgdata:
