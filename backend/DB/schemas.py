@@ -14,6 +14,14 @@ class PersonBase(BaseModel):
 class PersonCreate(PersonBase):
     pass
 
+class PersonUpdate(BaseModel):
+    name: Optional[str] = None
+    about: Optional[str] = None
+    text: Optional[List[str]] = None
+    photo: Optional[str] = None
+    sourses: Optional[List[str]] = None
+    autor: Optional[str] = None
+
 class PersonRead(PersonBase):
     id: int
     

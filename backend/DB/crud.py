@@ -1,5 +1,5 @@
 from .models import *
-from typing import List, Optional
+from typing import List, Optional, Union
 from sqlalchemy.orm import Session
 from . import models, schemas
 
@@ -36,7 +36,7 @@ def new_person(db: Session, person: schemas.PersonCreate) -> models.Persons:
     
     return add_person
     
-def edit_person(db: Session, id: int, person_data: schemas.PersonCreate) -> Optional[int]:
+def edit_person(db: Session, id: int, person_data: Union[schemas.PersonCreate, schemas.PersonUpdate]) -> Optional[int]:
     """
     Изменяет деятеля по ID.
     """

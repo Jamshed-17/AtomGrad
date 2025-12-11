@@ -280,13 +280,15 @@ const AdminPersonsPage = () => {
         ...(data.autor ? { autor: data.autor } : {}),
       };
 
-      // Debug
-      console.log("Sending to API:", JSON.stringify(personData, null, 2));
-
       if (isEditMode && id) {
-        await personsApi.update(Number(id), personData);
+        const imageFile =
+          uploadedPhotos.length > 0 ? uploadedPhotos[0].file : undefined;
+        await personsApi.update(Number(id), personData, imageFile);
       } else {
-        await personsApi.create(personData);
+        // Передаём первый загруженный файл для создания
+        const imageFile =
+          uploadedPhotos.length > 0 ? uploadedPhotos[0].file : undefined;
+        await personsApi.create(personData, imageFile);
       }
 
       navigate("/");

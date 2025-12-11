@@ -41,14 +41,52 @@ export const personsApi = {
   },
 
   // Создать деятеля (только для админов)
-  create: async (person: PersonCreate): Promise<PersonRead> => {
-    const response = await apiClient.post<PersonRead>('/admin/persons/', person);
+  // Отправляет FormData с изображением и данными
+  create: async (person: PersonCreate, imageFile?: File): Promise<PersonRead> => {
+    const formData = new FormData();
+    formData.append('name', person.name);
+    formData.append('about', person.about);
+    formData.append('text', JSON.stringify(person.text));
+    formData.append('sourses', JSON.stringify(person.sourses));
+    
+    if (person.autor) {
+      formData.append('autor', person.autor);
+    }
+    
+    if (imageFile) {
+      formData.append('photo', imageFile);
+    }
+
+    const response = await apiClient.post<PersonRead>('/admin/persons/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 
   // Обновить деятеля (только для админов)
-  update: async (personId: number, person: PersonCreate): Promise<PersonRead> => {
-    const response = await apiClient.put<PersonRead>(`/admin/persons/${personId}`, person);
+  update: async (personId: number, person: PersonCreate, imageFile?: File): Promise<PersonRead> => {
+    const formData = new FormData();
+    formData.append('name', person.name);
+    formData.append('about', person.about);
+    formData.append('text', JSON.stringify(person.text));
+    formData.append('sourses', JSON.stringify(person.sourses));
+    
+    if (person.autor) {
+      formData.append('autor', person.autor);
+    }
+
+    // Если есть новый файл, добавляем его
+    if (imageFile) {
+      formData.append('photo', imageFile);
+    }
+
+    const response = await apiClient.put<PersonRead>(`/admin/persons/${personId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 
@@ -57,4 +95,3 @@ export const personsApi = {
     await apiClient.delete(`/admin/persons/${personId}`);
   },
 };
-
