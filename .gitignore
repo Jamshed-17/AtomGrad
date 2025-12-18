@@ -8,3 +8,4 @@ frontend/text.txt
 backend/api/__pycache__
 backend/core/*
 backend/static/img*
+nginx/
