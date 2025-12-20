@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from backend.DB.init_db import create_db_and_tables, create_superadmin, run_db_seeding
 from backend.core.config import settings
 
-app = FastAPI(title="AtomGrad API", root_path="/api")
+app = FastAPI(title="AtomGrad API")
 
 
 @app.on_event("startup")
