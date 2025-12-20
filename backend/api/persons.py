@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from backend.DB import crud, db, schemas, models
 from typing import List, Optional
+from fastapi.responses import FileResponse
+from pathlib import Path
 
 router = APIRouter(prefix="/persons", tags=["persons"])
 
@@ -49,4 +51,8 @@ def person_image(person_id: int, db: Session = Depends(db.get_db)):
     db_person_poto = crud.person_image(db, person_id)
     if db_person_poto is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Person not found")
-    return db_person_poto
+    image_path = Path(f"backend/static{db_person_poto}")
+    if not image_path.is_file():
+        return {"error": "Image not found on the server"}
+    return FileResponse(image_path)
+     
