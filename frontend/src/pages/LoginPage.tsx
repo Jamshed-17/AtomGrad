@@ -16,11 +16,11 @@ import type { LoginCredentials } from "../api/auth";
 import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage = () => {
-  const [name, setName] = useState<string>("");
   const [login, setLogin] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
   const { login: authLogin } = useAuth();
   const navigate = useNavigate();
 
@@ -30,14 +30,13 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const credentials: LoginCredentials = { name, login, password };
+      const credentials: LoginCredentials = { login, password };
       await authLogin(credentials);
-      // Небольшая задержка для обновления состояния аутентификации
+
       setTimeout(() => {
         navigate("/admin/persons/new", { replace: true });
       }, 100);
     } catch (err: unknown) {
-      console.error("Login error:", err);
       const error = err as {
         response?: {
           data?: {
@@ -51,26 +50,12 @@ const LoginPage = () => {
 
       let errorMessage = "Неверный логин или пароль";
 
-      // Обработка ошибки 422 (валидация)
       if (error.response?.status === 422) {
         const detail = error.response.data?.detail;
         if (Array.isArray(detail)) {
-          // Pydantic возвращает массив ошибок валидации
-          errorMessage = (
-            detail as Array<{ loc?: (string | number)[]; msg?: string }>
-          )
-            .map(
-              (err) =>
-                `${err.loc?.join(".") || "Поле"}: ${
-                  err.msg || "Ошибка валидации"
-                }`
-            )
-            .join(", ");
+          errorMessage = detail.join(", ");
         } else if (typeof detail === "string") {
           errorMessage = detail;
-        } else {
-          errorMessage =
-            "Ошибка валидации данных. Проверьте правильность ввода.";
         }
       } else if (error.response?.data?.detail) {
         errorMessage = Array.isArray(error.response.data.detail)
@@ -113,6 +98,7 @@ const LoginPage = () => {
           >
             <CloseIcon />
           </IconButton>
+
           <Typography
             variant="h4"
             component="h1"
@@ -130,16 +116,6 @@ const LoginPage = () => {
           )}
 
           <Box component="form" onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Имя"
-              variant="outlined"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              sx={{ mb: 2 }}
-              disabled={loading}
-            />
             <TextField
               fullWidth
               label="Логин"

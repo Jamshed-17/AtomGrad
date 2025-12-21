@@ -23,14 +23,15 @@ const PersonDetailPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { mode } = useThemeMode();
+
   const [person, setPerson] = useState<PersonRead | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPerson = async () => {
-      if (!id) return;
+    if (!id) return;
 
+    const fetchPerson = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -46,26 +47,6 @@ const PersonDetailPage = () => {
 
     fetchPerson();
   }, [id]);
-
-  const getPhotoUrl = (photo: string) => {
-    if (!photo) return "";
-    
-    // Если уже полный URL, возвращаем как есть
-    if (photo.startsWith("http://") || photo.startsWith("https://")) {
-      return photo;
-    }
-
-    // Убираем ведущий слэш и префикс /img/ если они есть
-    let cleanPhoto = photo.trim();
-    if (cleanPhoto.startsWith("/img/")) {
-      cleanPhoto = cleanPhoto.substring(5); // Убираем "/img/"
-    } else if (cleanPhoto.startsWith("/")) {
-      cleanPhoto = cleanPhoto.substring(1); // Убираем ведущий "/"
-    }
-
-    // Формируем правильный URL
-    return `http://atomgrad.site:8000/img/${cleanPhoto}`;
-  };
 
   if (loading) {
     return (
@@ -108,19 +89,17 @@ const PersonDetailPage = () => {
       </Box>
 
       <Card>
-        {person.photo && (
-          <CardMedia
-            component="img"
-            image={getPhotoUrl(person.photo)}
-            alt={person.name}
-            sx={{
-              objectFit: "contain",
-              width: "100%",
-              maxHeight: "600px",
-              backgroundColor: mode === "dark" ? "#3a3a3a" : "#f5f5f5",
-            }}
-          />
-        )}
+        <CardMedia
+          component="img"
+          image={`/api/persons/image/${person.id}`}
+          alt={person.name}
+          sx={{
+            objectFit: "contain",
+            width: "100%",
+            maxHeight: "600px",
+            backgroundColor: mode === "dark" ? "#3a3a3a" : "#f5f5f5",
+          }}
+        />
 
         <Box sx={{ p: 3 }}>
           <Typography
@@ -147,7 +126,7 @@ const PersonDetailPage = () => {
             {person.about}
           </Typography>
 
-          {person.text && person.text.length > 0 && (
+          {person.text?.length > 0 && (
             <>
               <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
                 Биография
@@ -160,7 +139,7 @@ const PersonDetailPage = () => {
             </>
           )}
 
-          {person.sourses && person.sourses.length > 0 && (
+          {person.sourses?.length > 0 && (
             <>
               <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
                 Источники
