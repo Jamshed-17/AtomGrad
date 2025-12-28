@@ -1,0 +1,14 @@
+backend/old
+backend/data/*
+backend/__pycache__
+backend/DB/__pycache__
+backend/config.py
+.env
+frontend/text.txt
+backend/api/__pycache__
+backend/core/*
+backend/static/img*
+nginx/*
+nginx/certs
+./nginx
+nginx
