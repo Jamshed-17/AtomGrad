@@ -23,15 +23,14 @@ const PersonDetailPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { mode } = useThemeMode();
-
   const [person, setPerson] = useState<PersonRead | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
-
     const fetchPerson = async () => {
+      if (!id) return;
+
       try {
         setLoading(true);
         setError(null);
@@ -47,6 +46,11 @@ const PersonDetailPage = () => {
 
     fetchPerson();
   }, [id]);
+
+  const getPhotoUrl = (_photo: string, id: number) => {
+    // Всегда возвращаем новую схему URL по ID
+    return `https://atomgrad.site/api/persons/image/${id}`;
+  };
 
   if (loading) {
     return (
@@ -89,17 +93,19 @@ const PersonDetailPage = () => {
       </Box>
 
       <Card>
-        <CardMedia
-          component="img"
-          image={`/api/persons/image/${person.id}`}
-          alt={person.name}
-          sx={{
-            objectFit: "contain",
-            width: "100%",
-            maxHeight: "600px",
-            backgroundColor: mode === "dark" ? "#3a3a3a" : "#f5f5f5",
-          }}
-        />
+        {person.photo && (
+          <CardMedia
+            component="img"
+            image={getPhotoUrl(person.photo, person.id)}
+            alt={person.name}
+            sx={{
+              objectFit: "contain",
+              width: "100%",
+              maxHeight: "600px",
+              backgroundColor: mode === "dark" ? "#3a3a3a" : "#f5f5f5",
+            }}
+          />
+        )}
 
         <Box sx={{ p: 3 }}>
           <Typography
@@ -126,7 +132,7 @@ const PersonDetailPage = () => {
             {person.about}
           </Typography>
 
-          {person.text?.length > 0 && (
+          {person.text && person.text.length > 0 && (
             <>
               <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
                 Биография
@@ -139,7 +145,7 @@ const PersonDetailPage = () => {
             </>
           )}
 
-          {person.sourses?.length > 0 && (
+          {person.sourses && person.sourses.length > 0 && (
             <>
               <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
                 Источники

@@ -36,6 +36,41 @@ const TelegramButton = () => {
         <DialogContent>
           <DialogContentText sx={{ mb: 2 }}>
             <MuiLink
+              href="https://t.me/zerkalnaia"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                display: "block",
+                mb: 1,
+                fontSize: "1rem",
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+            >
+              Наталья Зеркалий
+            </MuiLink>
+            <MuiLink
+              href="https://t.me/Nena_russe"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                display: "block",
+                mb: 1,
+                fontSize: "1rem",
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+            >
+              Наталья Потапова
+            </MuiLink>
+          </DialogContentText>
+          <DialogTitle>Раработчики сайта</DialogTitle>
+          <DialogContentText sx={{ mb: 2 }}>
+            <MuiLink
               href="https://t.me/nikitamorkovkin"
               target="_blank"
               rel="noopener noreferrer"
@@ -49,7 +84,7 @@ const TelegramButton = () => {
                 },
               }}
             >
-              📱 Никита Морковкин
+              ⚙️ Никита Морковкин
             </MuiLink>
             <MuiLink
               href="https://t.me/Jamshed17"
@@ -65,7 +100,7 @@ const TelegramButton = () => {
                 },
               }}
             >
-              📱 Джамшед Акрамов
+              ⚙️ Джамшед Акрамов
             </MuiLink>
           </DialogContentText>
           <Divider sx={{ my: 2 }} />

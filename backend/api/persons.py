@@ -15,7 +15,8 @@ def read_persons(
     Получает список всех деятелей.
     """
     persons = crud.all_persons(db)
-    return persons 
+    result = sorted(persons, key=lambda x: x.name)
+    return result 
 
 @router.get("/{person_id}", response_model=schemas.PersonRead)
 def read_person(person_id: int, db: Session = Depends(db.get_db)):
