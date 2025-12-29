@@ -50,7 +50,7 @@ async def add_person(
         name=name,
         about=about,
         text=text_list,
-        photo=filename or "",
+        photo=f"img/{filename}" or "",
         sourses=sourses_list,
         autor=autor
     )
@@ -104,7 +104,7 @@ async def update_person(
     if text_list is not None: update_data_dict['text'] = text_list
     if sourses_list is not None: update_data_dict['sourses'] = sourses_list
     if autor is not None: update_data_dict['autor'] = autor
-    if filename is not None: update_data_dict['photo'] = filename
+    if filename is not None: update_data_dict['photo'] = f"img/{filename}"
 
     person_update = schemas.PersonUpdate(**update_data_dict)
     
